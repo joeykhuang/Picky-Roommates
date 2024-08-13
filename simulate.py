@@ -1,7 +1,5 @@
-import numpy as np
 import pandas as pd
 import itertools
-
 from tqdm import trange
 import time
 from preferences import generate_preferences, calculate_utilities
@@ -90,7 +88,7 @@ def runtime_sim(nmax=12, niter=10):
         t = 0
         m = 2 * n
         for _ in range(niter):
-            prefs = generate_preferences(m, n)
+            prefs = generate_preferences(m, n, 0.5)
             greedy_utilities_df = generate_greedy_utilities(prefs)
             start = time.time()
             generate_mwis_solution(m, n, greedy_utilities_df)
@@ -117,11 +115,10 @@ def simulate_mwis_with_ghosts(m, n, num_simulations, singles_preference_param, d
             mwis_partition_ghost, mwis_result = generate_mwis_solution(m, n, generate_greedy_utilities(prefs))
         else:
             possible_mwis_res = []
-            for ghost in list(itertools.combinations(list(range(m)), r=new_m-m)):
-                prefs_ghosts = add_preferences_with_ghosts(m, n, prefs, ghost)
-                greedy_utilities_ghosts_df = generate_greedy_utilities(prefs_ghosts)
-                mwis_partition_ghost, mwis_result_ghost = generate_mwis_solution(new_m, n, greedy_utilities_ghosts_df)
-                possible_mwis_res.append(mwis_result_ghost)
+            prefs_ghosts = add_preferences_with_ghosts(m, n, prefs)
+            greedy_utilities_ghosts_df = generate_greedy_utilities(prefs_ghosts)
+            mwis_partition_ghost, mwis_result_ghost = generate_mwis_solution(new_m, n, greedy_utilities_ghosts_df)
+            possible_mwis_res.append(mwis_result_ghost)
 
             mwis_result = max(possible_mwis_res)
 

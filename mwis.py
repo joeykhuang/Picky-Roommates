@@ -59,28 +59,31 @@ def generate_mwis_solution(m, n, greedy_df):
     mwis_partition = np.array(G.nodes())[mwis]
     return mwis_partition, mwis_result
 
-def add_preferences_with_ghosts(m, n, prefs, ghosts):
+def add_preferences_with_ghosts(m, n, prefs):
     ghost_preference_matrix = []
 
     if m == 2 * n:
         return prefs
 
+    num_ghosts = 2 * n - m
+
     for i in range(m):
-        # generate row-normalized preference matrices
         player_preference = np.zeros((2 * n, n))
         player_preference[:m] = prefs[i]
 
-        for j in range(len(ghosts)):
-            if (ghosts[j] == i):
-                player_preference[m + j] = player_preference[i] / 2
-            else:
-                player_preference[m + j] = np.ones(n) * (-100)
+        for j in range(num_ghosts):
+            player_preference[m + j] = player_preference[i] / 2
+
         ghost_preference_matrix.append(player_preference)
 
     for i in range(m, 2 * n):
-        partner = ghosts[i - m]
-        player_preference = np.ones((2 * n, n)) * (-100)
-        player_preference[partner] = ghost_preference_matrix[partner][i]
+        player_preference = np.zeros((2 * n, n))
+        for j in range(m):
+            player_preference[j] = ghost_preference_matrix[j][i]
+
+        for j in range(m, 2 * n):
+            player_preference[j] = np.ones(n) * -100
+
         ghost_preference_matrix.append(player_preference)
 
     return ghost_preference_matrix
