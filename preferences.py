@@ -1,6 +1,7 @@
 import numpy as np
 from sklearn.preprocessing import normalize
 
+# Generate random preferences from a uniform distribution
 def generate_preferences(m, n, singles_preference_param):
     preference_matrix = []
     for i in range(m):
@@ -14,22 +15,25 @@ def generate_preferences(m, n, singles_preference_param):
 
     return preference_matrix
 
+# Calculates the utilities matrix based on a list of partitions and the preferences matrix.
+# Used for brute-forcing all possible partitions and finding the max-utility partition
 def calculate_utilities(partitions, preferences):
     def calculate_utilities_for_partition(partition, preferences):
         total_utility = 0
         for i in range(len(partition)):
             room = partition[i]
+            # singles
             if (len(room) == 1):
                 person = room[0] - 1
                 total_utility += preferences[person][person][i]
+
+            # doubles
             else:
                 person1 = room[0] - 1
                 person2 = room[1] - 1
                 total_utility += preferences[person1][person2][i] + preferences[person2][person1][i]
         return total_utility
 
-    m = len(preferences)
-    n = len(preferences[0][0])
     partition_utilities = []
     for partition in partitions:
         partition_utilities.append((partition, calculate_utilities_for_partition(partition, preferences)))

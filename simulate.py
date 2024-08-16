@@ -8,6 +8,7 @@ from mwis import *
 from ef import *
 
 
+# Generate all possible partitions for m tenants and n rooms
 def generate_partitions(m, n):
     def recursive_assign(assigned, remaining):
         if not remaining:
@@ -36,20 +37,23 @@ def generate_partitions(m, n):
         partitions_new.extend(list(itertools.permutations(partition)))
     return partitions_new
 
-
+# Simulates the greedy and greedy with bipartite matching solutions
 def simulate(m, n, num_simulations, singles_preference_param):
     greedy_results = []
     greedy_match_results = []
     optimal_results = []
     for _ in range(num_simulations):
+        # generate random preferences
         prefs = generate_preferences(m, n, singles_preference_param)
+
+        # generate greedy and greedy with matching solutions
         greedy_utilities_df = generate_greedy_utilities(prefs)
         greedy_assignment_partition, greedy_assignment_result = create_greedy_partition(m, n, greedy_utilities_df)
         greedy_match_partition, greedy_match_result = greedy_match(greedy_assignment_partition, greedy_utilities_df)
 
+        # enumerate all possible partitions to find the optimal assignment
         optimal_assignments = calculate_utilities(generate_partitions(m, n), prefs)
         optimal_assignment_result = pd.DataFrame(optimal_assignments)[1].max()
-
 
         greedy_results.append(greedy_assignment_result)
         greedy_match_results.append(greedy_match_result)
@@ -57,13 +61,14 @@ def simulate(m, n, num_simulations, singles_preference_param):
 
     return greedy_results, greedy_match_results, optimal_results
 
-
+# Simulate the greedy and greedy with bipartite matching and MWIS solutions
 def simulate_mwis(m, n, num_simulations, do_optimal=True):
     greedy_results = []
     greedy_match_results = []
     mwis_results = []
     optimal_results = []
     for _ in range(num_simulations):
+        # generate random preferences with singles preference (alpha) fixed at 0.5
         prefs = generate_preferences(m, n, 0.5)
         greedy_utilities_df = generate_greedy_utilities(prefs)
         greedy_assignment_partition, greedy_assignment_result = create_greedy_partition(m, n, greedy_utilities_df)
@@ -82,6 +87,7 @@ def simulate_mwis(m, n, num_simulations, do_optimal=True):
 
     return greedy_results, greedy_match_results, mwis_results, optimal_results
 
+# Simuate the MWIS runtimes
 def runtime_sim(nmax=12, niter=10):
     timings = []
     for n in trange(2, nmax):
@@ -97,7 +103,7 @@ def runtime_sim(nmax=12, niter=10):
         timings.append(t / niter)
     return timings
 
-
+# Simulate MWIS with ghost preferences (m < 2n)
 def simulate_mwis_with_ghosts(m, n, num_simulations, singles_preference_param, do_optimal=True):
     greedy_results = []
     greedy_match_results = []

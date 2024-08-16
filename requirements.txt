@@ -1,0 +1,12 @@
+gurobipy==11.0.3
+networkx==2.4
+numpy==1.18.5
+numpy==1.23.5
+numpy==1.24.4
+pandas==2.0.3
+pandas==1.0.5
+scikit_learn==0.23.1
+scipy==1.5.0
+tqdm==4.47.0
+~umpy==1.18.5
+~umpy==1.24.4
